@@ -10,8 +10,17 @@ const EmailGuesserContainer = () => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
 
+    // Function to normalize full name and domain
+    const normalizeInput = (value) => {
+        return value.trim().replace(/\s+/g, ' ');
+    };
+
     const handleSubmit = async () => {
-        const validation = validateForm(fullName, domain);
+        // Normalize inputs before validation
+        const normalizedFullName = normalizeInput(fullName);
+        const normalizedDomain = normalizeInput(domain);
+
+        const validation = validateForm(normalizedFullName, normalizedDomain);
         if (!validation.isValid) {
             setError(validation.message);
             return;
@@ -22,7 +31,7 @@ const EmailGuesserContainer = () => {
         setEmails([]); // Reset emails
 
         try {
-            const response = await deriveEmail(fullName, domain);
+            const response = await deriveEmail(normalizedFullName, normalizedDomain);
             setLoading(false);
 
             if (response.success) {
